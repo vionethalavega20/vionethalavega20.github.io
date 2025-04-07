@@ -1,4 +1,4 @@
-# vionethalavega20.github.io
+
 
 # Laporan Keuangan Harian
 
@@ -41,7 +41,9 @@ Tidak memerlukan proses instalasi. Cukup buka file `index.html` melalui browser.
 Berikut adalah tampilan antarmuka aplikasi:
 
 ### Form Input dan Tabel Transaksi
-![Screenshot Form Input dan Tabel Transaksi](screenshots/form1.png)
+
+![Screenshot Form Input dan Tabel Transaksi](screenshots/form1.png) 
+
 
 ### Hasil Ekspor PDF
 ![Screenshot PDF Ekspor](screenshots/hasilpdf.png)
