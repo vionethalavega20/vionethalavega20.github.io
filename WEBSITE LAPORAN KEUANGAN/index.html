@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laporan Keuangan Harian</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="container py-5">
+
+    <h2 class="text-center text-primary">Pencatatan Keuangan Harian</h2>
+    <p class="text-center text-muted">Mengelola keuangan dengan mudah</p>
+
+    <div class="row text-center mb-4">
+        <div class="col-lg-4 col-md-6 mb-2">
+            <div class="border bg-light shadow-sm p-3 rounded">
+                <h5>Pemasukan: Rp <span id="totalPemasukan">0</span></h5>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 mb-2">
+            <div class="border bg-light shadow-sm p-3 rounded">
+                <h5>Pengeluaran: Rp <span id="totalPengeluaran">0</span></h5>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-12 mb-2">
+            <div class="border bg-light shadow-sm p-3 rounded">
+                <h5>Saldo Akhir: Rp <span id="saldoAkhir">0</span></h5>
+            </div>
+        </div>
+    </div>
+
+    <h4 class="text-center">Tambah Transaksi</h4>
+    <div class="card p-4 shadow-sm">
+        <div class="mb-3">
+            <label for="tanggal" class="form-label">Tanggal:</label>
+            <input type="date" id="tanggal" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="keterangan" class="form-label">Keterangan:</label>
+            <input type="text" id="keterangan" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="tipeTransaksi" class="form-label">Jenis Transaksi:</label>
+            <select id="tipeTransaksi" class="form-select">
+                <option value="pemasukan">Pemasukan</option>
+                <option value="pengeluaran">Pengeluaran</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="jumlah" class="form-label">Jumlah (Rp):</label>
+            <input type="number" id="jumlah" class="form-control">
+        </div>
+        <div class="row mt-3 gap-1">
+            <button class="btn btn-success col p-2" onclick="tambahTransaksi()">Tambah Transaksi</button>
+            <button class="btn btn-danger col p-2" onclick="hapusSemuaData()">Hapus Semua Transaksi</button>
+            <button class="btn btn-primary col p-2" onclick="unduhPDF()">Unduh PDF</button>
+            <button class="btn btn-warning col p-2" onclick="hapusBarisTerakhir()">Hapus Transaksi Terakhir</button>
+        </div>
+    </div>
+
+    <h4 class="mt-4">Riwayat Transaksi</h4>
+    <table class="table table-striped mt-2">
+        <thead class="table-dark">
+            <tr>
+                <th>Tanggal</th>
+                <th>Keterangan</th>
+                <th>Jenis</th>
+                <th>Jumlah</th>
+            </tr>
+        </thead>
+        <tbody id="dataKeuangan"></tbody>
+    </table>
+
+    <script>
+        let totalPemasukan = 0;
+        let totalPengeluaran = 0;
+
+        function tambahTransaksi() {
+            let tanggal = document.getElementById("tanggal").value;
+            let keterangan = document.getElementById("keterangan").value;
+            let tipe = document.getElementById("tipeTransaksi").value;
+            let jumlah = parseFloat(document.getElementById("jumlah").value);
+
+            if (!tanggal || !keterangan || !jumlah || isNaN(jumlah) || jumlah <= 0) {
+                alert("Mohon isi semua data dengan benar.");
+                return;
+            }
+
+            let table = document.getElementById("dataKeuangan");
+            let row = table.insertRow();
+            row.insertCell(0).innerText = tanggal;
+            row.insertCell(1).innerText = keterangan;
+            row.insertCell(2).innerText = tipe.charAt(0).toUpperCase() + tipe.slice(1);
+            row.insertCell(3).innerText = "Rp " + jumlah.toLocaleString();
+
+            if (tipe === "pemasukan") {
+                totalPemasukan += jumlah;
+            } else {
+                totalPengeluaran += jumlah;
+            }
+
+            updateSaldo();
+        }
+
+        function updateSaldo() {
+            let saldo = totalPemasukan - totalPengeluaran;
+            document.getElementById("totalPemasukan").innerText = totalPemasukan.toLocaleString();
+            document.getElementById("totalPengeluaran").innerText = totalPengeluaran.toLocaleString();
+            document.getElementById("saldoAkhir").innerText = saldo.toLocaleString();
+        }
+
+        function hapusSemuaData() {
+            document.getElementById("dataKeuangan").innerHTML = "";
+            totalPemasukan = 0;
+            totalPengeluaran = 0;
+            updateSaldo();
+        }
+
+        function hapusBarisTerakhir() {
+            let table = document.getElementById("dataKeuangan");
+            if (table.rows.length > 0) {
+                let lastRow = table.rows[table.rows.length - 1];
+                let tipe = lastRow.cells[2].innerText.toLowerCase();
+                let jumlah = parseFloat(lastRow.cells[3].innerText.replace("Rp ", "").replace(/,/g, ""));
+
+                if (tipe === "pemasukan") {
+                    totalPemasukan -= jumlah;
+                } else {
+                    totalPengeluaran -= jumlah;
+                }
+
+                table.deleteRow(table.rows.length - 1);
+                updateSaldo();
+            }
+        }
+
+        async function unduhPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.setFontSize(16);
+            doc.text("Laporan Keuangan Harian", 14, 15);
+            doc.setFontSize(12);
+            doc.text("Dicetak pada: " + new Date().toLocaleString(), 14, 22);
+
+        // Mengambil data tabel
+        const rows = [];
+        const table = document.getElementById("dataKeuangan");
+
+        for (let i = 0; i < table.rows.length; i++) {
+        const row = table.rows[i];
+        const rowData = [
+            row.cells[0].innerText,
+            row.cells[1].innerText,
+            row.cells[2].innerText,
+            row.cells[3].innerText
+        ];
+        rows.push(rowData);
+        }
+
+        if (rows.length === 0) {
+            alert("Tidak ada data untuk diunduh.");
+            return;
+        }
+
+        // Menambahkan tabel ke PDF
+        doc.autoTable({
+            head: [["Tanggal", "Keterangan", "Jenis", "Jumlah"]],
+            body: rows,
+            startY: 30
+        });
+
+        // Menampilkan total pemasukan, pengeluaran, dan saldo akhir 
+        const finalY = doc.autoTable.previous.finalY + 10;
+        doc.text("Total Pemasukan: Rp " + totalPemasukan.toLocaleString(), 14, finalY);
+        doc.text("Total Pengeluaran: Rp " + totalPengeluaran.toLocaleString(), 14, finalY + 6);
+        doc.text("Saldo Akhir: Rp " + (totalPemasukan - totalPengeluaran).toLocaleString(), 14, finalY + 12);
+
+        doc.save("Laporan Keuangan Harian.pdf");
+        }
+
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+</body>
+</html>
