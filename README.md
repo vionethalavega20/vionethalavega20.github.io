@@ -17,7 +17,24 @@ Aplikasi ini memudahkan pengguna dalam mencatat transaksi harian, baik pemasukan
 
 ## Instalasi
 
-Tidak memerlukan proses instalasi. Cukup buka file `index.html` melalui browser.
+Untuk menjalankan proyek ini secara lokal, ikuti langkah-langkah berikut:
+
+1. **Clone repositori ini ke komputer lokal:**
+git clone https://github.com/vionethalavega20/vionethalavega20.github.io.git
+
+
+2. **Masuk ke direktori proyek:**
+cd vionethalavega20.github.io
+
+
+3. **Buka file `index.html` di browser favorit kamu:**
+
+- Klik dua kali pada file `index.html`, atau  
+- Jalankan dengan Live Server jika menggunakan Visual Studio Code
+
+Tidak diperlukan instalasi tambahan karena ini adalah proyek berbasis **HTML**, **CSS**, dan **JavaScript** yang berjalan langsung di browser.
+
+> Pastikan kamu sudah menginstal [Visual Studio Code](https://code.visualstudio.com/) jika ingin mengedit proyek ini dengan mudah.
 
 ## Cara Penggunaan
 
